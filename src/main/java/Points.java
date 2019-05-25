@@ -49,14 +49,6 @@ class Points extends ArrayList<RoutePoint> {
         return maximum;
     }
 
-    public Point getMinimumPanel () {
-        return minimumPanel;
-    }
-
-    public Point getMaximumPanel () {
-        return maximumPanel;
-    }
-
     private void checkAndUpdateBounds (double coordinateX, double coordinateY) {
         if (coordinateX < minimum.getX())
             minimum.setX(coordinateX);

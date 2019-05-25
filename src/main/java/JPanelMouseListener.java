@@ -27,19 +27,19 @@ public class JPanelMouseListener implements MouseListener, MouseMotionListener {
                                     parentPanel.getHeight() - e.getY());
                 parentPanel.setLocation(parentPanel.getX() + e.getX(),
                                         parentPanel.getY() + e.getY());
-                parentPanel.updatePointsPanel();
+                parentPanel.locatePoints();
                 parentPanel.repaint();
                 return;
             case NE_RESIZE_CURSOR:
                 parentPanel.setSize(e.getX(),parentPanel.getHeight() - e.getY());
                 parentPanel.setLocation(parentPanel.getX(), parentPanel.getY() + e.getY());
-                parentPanel.updatePointsPanel();
+                parentPanel.locatePoints();
                 parentPanel.repaint();
                 return;
             case SW_RESIZE_CURSOR:
                 parentPanel.setSize(parentPanel.getWidth() - e.getX(), e.getY());
                 parentPanel.setLocation(parentPanel.getX() + e.getX(), parentPanel.getY());
-                parentPanel.updatePointsPanel();
+                parentPanel.locatePoints();
                 parentPanel.repaint();
                 return;
             case SE_RESIZE_CURSOR:

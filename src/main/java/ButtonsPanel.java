@@ -73,7 +73,7 @@ class ButtonsPanel extends JPanel {
 
     private void loadFileAndDrawAtPanel () {
         logger.info("Starting loading image from file");
-        File file = loadUsingFileChooser(null);
+        File file = loadUsingFileChooser(new FileNameExtensionFilter("Images", "jpg"));
         if (file == null) {
             logger.warning("user has not selected any file");
             return;
@@ -202,7 +202,8 @@ class ButtonsPanel extends JPanel {
                     points.add(coordinateX, coordinateY);
                 }
             }
-            pointsPanel.updatePointsPanel();
+            pointsPanel.locatePoints();
+            pointsPanel.repaint();
 
         } catch (Exception e) {
             e.printStackTrace();
