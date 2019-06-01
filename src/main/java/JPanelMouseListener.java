@@ -21,30 +21,32 @@ public class JPanelMouseListener implements MouseListener, MouseMotionListener {
     public void mouseDragged (MouseEvent e) {
         logger.info("method called");
         logger.info("Mouse dragged");
+        int newHeight;
         switch (parentPanel.getCursor().getType()) {
             case NW_RESIZE_CURSOR:
-                parentPanel.setSize(parentPanel.getWidth() - e.getX(),
-                                    parentPanel.getHeight() - e.getY());
+                newHeight = parentPanel.setSize(parentPanel.getWidth() - e.getX());
                 parentPanel.setLocation(parentPanel.getX() + e.getX(),
-                                        parentPanel.getY() + e.getY());
+                                        parentPanel.getY() + parentPanel.getHeight() - newHeight);
                 parentPanel.locatePoints();
                 parentPanel.repaint();
                 return;
             case NE_RESIZE_CURSOR:
-                parentPanel.setSize(e.getX(),parentPanel.getHeight() - e.getY());
-                parentPanel.setLocation(parentPanel.getX(), parentPanel.getY() + e.getY());
+                newHeight = parentPanel.setSize(e.getX());
+                parentPanel.setLocation(parentPanel.getX(),
+                                        parentPanel.getY() + parentPanel.getHeight() - newHeight);
                 parentPanel.locatePoints();
                 parentPanel.repaint();
                 return;
             case SW_RESIZE_CURSOR:
-                parentPanel.setSize(parentPanel.getWidth() - e.getX(), e.getY());
+                int deltaX = parentPanel.getWidth() - e.getX();
+                parentPanel.setSize(deltaX);
                 parentPanel.setLocation(parentPanel.getX() + e.getX(), parentPanel.getY());
                 parentPanel.locatePoints();
                 parentPanel.repaint();
                 return;
             case SE_RESIZE_CURSOR:
-                parentPanel.setSize(e.getX(), e.getY());
-                //parentPanel.updatePointsPanelWithoutPanelResize();
+                parentPanel.setSize(e.getX());
+                parentPanel.locatePoints();
                 parentPanel.repaint();
                 return;
         }

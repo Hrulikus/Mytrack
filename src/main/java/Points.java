@@ -14,9 +14,6 @@ class Points extends ArrayList<RoutePoint> {
     private RoutePoint minimum = new RoutePoint(100, 100);
     private RoutePoint maximum = new RoutePoint(0, 0);
 
-    private Point minimumPanel = new Point(5000, 5000);
-    private Point maximumPanel = new Point(0, 0);
-
     static Points EMPTY = new Points();
 
     private Points () {
@@ -60,59 +57,16 @@ class Points extends ArrayList<RoutePoint> {
             maximum.setY(coordinateY);
     }
 
-    private void checkAndUpdatePanelBounds (double coordinateX, double coordinateY) {
-        if (coordinateX < minimumPanel.getX())
-            minimumPanel.x = (int) coordinateX;
-        if (coordinateX > maximumPanel.getX())
-            maximumPanel.x = (int) coordinateX;
-        if (coordinateY < minimumPanel.getY())
-            minimumPanel.y = (int) coordinateY;
-        if (coordinateY > maximumPanel.getY())
-            maximumPanel.y = (int) coordinateY;
-    }
-
-    Dimension locatePointsAtPanelAndResizePanel (PointsPanel panel) {
-        logger.info("Initial PointsPanel size before resize:" + panel.getWidth() + " " + panel.getHeight());
-
-        Dimension panelSize = panel.getSize();
-        Dimension drawBounds = new Dimension((int) panelSize.getWidth() - 2,
-                                             (int) panelSize.getHeight() - 2);
-
-        double maximumX = getMaximum().getX();
-        double minimumX = getMinimum().getX();
-        double maximumY = getMaximum().getY();
-        double minimumY = getMinimum().getY();
-
-        double spreadX = maximumX - minimumX;
-        double spreadY = maximumY - minimumY;
-
-        double koefX = drawBounds.getWidth() / spreadX;
-        double koefY = drawBounds.getHeight() / spreadY;
-
-        double minKoef = Math.min(koefX, koefY);
-
-        for (RoutePoint currentPoint : points) {
-            double x = (currentPoint.getX() - minimumX) * minKoef + 1;
-            double y = (currentPoint.getY() - minimumY) * minKoef + 1;
-            currentPoint.setPanelX(x);
-            currentPoint.setPanelY(y);
-            checkAndUpdatePanelBounds(x, y);
-        }
-
-        int newWidth = maximumPanel.x - minimumPanel.x + 2;
-        int newHeight = maximumPanel.y - minimumPanel.y + 2;
-
-        logger.info("New PointsPanel size after points recalculate: " + newWidth + " " + newHeight);
-
-        setPointsLocationAtPanel(newHeight);
-
-        return new Dimension(newWidth, newHeight);
-    }
 
     public void locatePointsAtPanel (PointsPanel panel) {
-        logger.info("Recalculate points to print at panel with size: " + panel.getWidth() + ";" + panel.getHeight());
+        logger.info("method called with PointsPanel par and panel has size: " + panel.getWidth() + ";" + panel.getHeight());
 
-        Dimension panelSize = panel.getSize();
+        locatePointsAtPanel(panel.getSize());
+    }
+
+    public void locatePointsAtPanel (Dimension panelSize) {
+        logger.info("method called with Dimension par has size: " + panelSize.getWidth() + ";" + panelSize.getHeight());
+
         Dimension drawBounds = new Dimension((int) panelSize.getWidth() - 2,
                                              (int) panelSize.getHeight() - 2);
 
@@ -127,22 +81,13 @@ class Points extends ArrayList<RoutePoint> {
         double koefX = drawBounds.getWidth() / spreadX;
         double koefY = drawBounds.getHeight() / spreadY;
 
-        double minKoef = Math.min(koefX, koefY);
+        //double minKoef = Math.min(koefX, koefY);
 
         for (RoutePoint currentPoint : points) {
-            double x = (currentPoint.getX() - minimumX) * minKoef + 1;
-            double y = (currentPoint.getY() - minimumY) * minKoef + 1;
+            double x = (currentPoint.getX() - minimumX) * koefX + 1;
+            double y = (currentPoint.getY() - minimumY) * koefY + 1;
             currentPoint.setPanelX(x);
             currentPoint.setPanelY(drawBounds.getHeight() - y);
-        }
-    }
-
-    private void setPointsLocationAtPanel (int newHeight) {
-        for (RoutePoint currentPoint : points) {
-            double x = currentPoint.getPanelX();
-            double y = currentPoint.getPanelY();
-            currentPoint.setPanelX(x);
-            currentPoint.setPanelY(newHeight - y);
         }
     }
 }

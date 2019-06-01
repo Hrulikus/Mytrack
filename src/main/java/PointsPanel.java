@@ -13,9 +13,8 @@ class PointsPanel extends JPanel {
     Border activeBorder = BorderFactory.createDashedBorder(Color.GREEN, 3, 2);
 
 
-    PointsPanel (Dimension d) {
+    PointsPanel () {
         logger.info("method called");
-        setSize(d);
         setBackground(WHITE);
         setOpaque(false);
         setLayout(null);
@@ -31,13 +30,37 @@ class PointsPanel extends JPanel {
         POINTS.locatePointsAtPanel(this);
     }
 
-    public void setSize (int width, int height) {
-        super.setSize(width, height);
+    public void locatePointsForFirstTime (DrawingPanel panel) {
         logger.info("method called");
-        if (POINTS.size() > 0) {
-            locatePoints();
-            repaint();
+        double ratio = getSizeRatio();
+        int preferredWidth = panel.getWidth() / 2;
+        Dimension newSize = new Dimension(preferredWidth, (int) (ratio * preferredWidth));
+        this.setSize(newSize);
+        POINTS.locatePointsAtPanel(newSize);
+    }
+
+    public double getSizeRatio () {
+        logger.info("method called");
+        logger.info("MaxPoint: " + POINTS.getMaximum().getX() + " " + POINTS.getMaximum().getY());
+        logger.info("MinPoint: " + POINTS.getMinimum().getX() + " " + POINTS.getMinimum().getY());
+        double spreadX = POINTS.getMaximum().getX() - POINTS.getMinimum().getX();
+        double spreadY = POINTS.getMaximum().getY() - POINTS.getMinimum().getY();
+        logger.info("Calculated spread: " + spreadX + " " + spreadY);
+
+        double newSpreadX = spreadX * 10000;
+        double newSpreadY = spreadY * 10000;
+        if (spreadX != 0d) {
+            logger.info("Calculated ratio: " + spreadY / spreadX);
+            return newSpreadY / newSpreadX;
         }
+        return 0d;
+    }
+
+    public int setSize (int width) {
+        logger.info("method called");
+        int height = (int) (width * getSizeRatio());
+        super.setSize(width, height);
+        return height;
     }
 
     public void paintComponent (Graphics g) {
