@@ -194,15 +194,15 @@ class ButtonsPanel extends JPanel {
                 Node node = pointsList.item(temp);
                 Element element = (Element) node;
                 if (node.getNodeType() == Node.ELEMENT_NODE) {
-                    String attributeLat = element.getAttribute("lon");
-                    String attributeLon = element.getAttribute("lat");
-                    double coordinateX = Double.parseDouble(attributeLat);
-                    double coordinateY = Double.parseDouble(attributeLon);
+                    String attributeLat = element.getAttribute("lat");
+                    String attributeLon = element.getAttribute("lon");
+                    double coordinateX = Double.parseDouble(attributeLon);
+                    double coordinateY = Double.parseDouble(attributeLat);
 
                     points.add(coordinateX, coordinateY);
                 }
             }
-            pointsPanel.locatePoints();
+            pointsPanel.locatePointsForFirstTime(drawingPanel);
             pointsPanel.repaint();
 
         } catch (Exception e) {
