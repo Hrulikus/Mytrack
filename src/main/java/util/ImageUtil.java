@@ -6,8 +6,15 @@ import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.util.logging.Logger;
 
+import static java.util.logging.Level.WARNING;
+
 public class ImageUtil {
     private static final Logger logger = Logger.getLogger(ImageUtil.class.getName());
+
+    static {
+        logger.setLevel(WARNING);
+    }
+
     public static BufferedImage scaleImage (BufferedImage image, Dimension dimension) {
         int w = image.getWidth();
         int h = image.getHeight();

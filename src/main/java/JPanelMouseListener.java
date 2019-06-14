@@ -5,6 +5,7 @@ import java.awt.event.MouseMotionListener;
 import java.util.logging.Logger;
 
 import static java.awt.Cursor.*;
+import static java.util.logging.Level.WARNING;
 
 public class JPanelMouseListener implements MouseListener, MouseMotionListener {
 
@@ -15,6 +16,8 @@ public class JPanelMouseListener implements MouseListener, MouseMotionListener {
 
     JPanelMouseListener (PointsPanel panel) {
         this.parentPanel = panel;
+
+        logger.setLevel(WARNING);
     }
 
     @Override

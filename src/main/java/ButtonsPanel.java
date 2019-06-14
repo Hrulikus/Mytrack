@@ -2,8 +2,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import util.Gap;
-import util.ImageUtil;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -27,6 +25,7 @@ class ButtonsPanel extends JPanel {
 
     private static final LoadButton LOAD_IMAGE_BUTTON = new LoadButton("Load image");
     private static final LoadButton LOAD_GPX_BUTTON = new LoadButton("Load GPX file");
+    private static final Label SIZE_LABEL = new Label();
 
     private Main parentFrame;
 
@@ -35,6 +34,7 @@ class ButtonsPanel extends JPanel {
         this.parentFrame = parentFrame;
         addLoadImageButton();
         addLoadGpxButton();
+        addImageSizeLabel();
         setSize(parentFrame.getContentPane().getWidth() - 20, 40);
         setLocation(0, parentFrame.getContentPane().getHeight() - 50);
     }
@@ -47,6 +47,12 @@ class ButtonsPanel extends JPanel {
     private void resizeAndRelocateButtons () {
         LOAD_IMAGE_BUTTON.setPreferredSize(new Dimension(this.getWidth() / 5, 30));
         LOAD_GPX_BUTTON.setPreferredSize(new Dimension(this.getWidth() / 5, 30));
+        SIZE_LABEL.setPreferredSize(new Dimension(this.getWidth() / 5, 30));
+    }
+
+    private void addImageSizeLabel () {
+        SIZE_LABEL.setVisible(true);
+        add(SIZE_LABEL);
     }
 
     private void addLoadImageButton () {
@@ -71,6 +77,10 @@ class ButtonsPanel extends JPanel {
         add(LOAD_GPX_BUTTON);
     }
 
+    public void updateSizeLabel (int width, int height) {
+        SIZE_LABEL.setText("Drawing Panel size: " + width + ";" + height);
+    }
+
     private void loadFileAndDrawAtPanel () {
         logger.info("Starting loading image from file");
         File file = loadUsingFileChooser(new FileNameExtensionFilter("Images", "jpg"));
@@ -79,70 +89,13 @@ class ButtonsPanel extends JPanel {
             return;
         }
         BufferedImage bufferedImage = convertFileToBufferedImage(file);
-        resizeFrameAndRepaintImage(bufferedImage);
+        parentFrame.resizeFrameAndRepaintImage(bufferedImage);
     }
 
-
-    private void resizeFrameAndRepaintImage (BufferedImage image) {
-        parentFrame.setVisible(false);
-        Dimension maxFrameSize = parentFrame.getMaxFrameSize();
-        boolean shouldImageBeScaled = false;
-        BufferedImage newImage;
-        Dimension newImageSize;
-
-        Dimension newFrameSize = getNewFrameSize(image);
-
-        logger.info("New calculated Frame Size: " + newFrameSize.getWidth() + " " + newFrameSize.getHeight());
-        if (newFrameSize.getWidth() > maxFrameSize.getWidth() ||
-                    newFrameSize.getHeight() > maxFrameSize.getHeight()) {
-            newFrameSize = maxFrameSize;
-            logger.warning("Frame size is over maximum one, so will be overriden");
-            shouldImageBeScaled = true;
-        }
-
-
-        logger.info("Setting new JFrame size to " + newFrameSize.width + " " + newFrameSize.height);
-        parentFrame.setSize(newFrameSize);
-        if (shouldImageBeScaled) {
-            newImageSize = calculateImageSizeFromFrame(newFrameSize);
-            newImage = ImageUtil.scaleImage(image, newImageSize);
-            parentFrame.getDrawingPanel().setSize(newImageSize.width, newImageSize.height);
-        }
-        else {
-            newImage = image;
-        }
-
-        parentFrame.getDrawingPanel().drawScaledImageAtPanel(newImage);
-
-        resizeAndRelocatePanel(newFrameSize);
-        parentFrame.setVisible(true);
-    }
-
-    private void resizeAndRelocatePanel (Dimension frameSize) {
-        setSize((int) frameSize.getWidth(), 40);
-        locatePanel(frameSize);
-    }
-
-    private Dimension calculateImageSizeFromFrame (Dimension newFrameSize) {
-        Gap gap = parentFrame.getDrawingPanel().getGap();
-        Insets insets = parentFrame.getDrawingPanel().getInsets();
-        return new Dimension((int) (newFrameSize.getWidth() - (gap.right + gap.left + insets.left + insets.right)),
-                             (int) (newFrameSize.getHeight() - (gap.top + gap.bottom + insets.top + insets.bottom)));
-    }
-
-    private void locatePanel (Dimension newFrameSize) {
+    public void locatePanel (Dimension newFrameSize) {
         int buttonsY = newFrameSize.height - parentFrame.getInsets().bottom - parentFrame.getDrawingPanel().getGap().bottom;
         logger.info("Setting new buttons panel location: 0 " + buttonsY);
         this.setLocation(0, buttonsY);
-    }
-
-    private Dimension getNewFrameSize (BufferedImage image) {
-        int imageWidth = image.getWidth();
-        int imageHeight = image.getHeight();
-        Gap gap = parentFrame.getDrawingPanel().getGap();
-        Insets insets = parentFrame.getInsets();
-        return new Dimension(imageWidth + gap.left + gap.right + insets.left + insets.right,
-                             imageHeight + gap.top + gap.bottom + insets.top + insets.bottom);
     }
 
     private void loadGpxFileAndDrawAtPanel () {
@@ -168,6 +121,7 @@ class ButtonsPanel extends JPanel {
 
 
     private void parseAndDrawPoints (File file) {
+        //TODO: find new approach from https://stackoverflow.com/questions/3495052/gpx-parser-for-java
         try {
             DrawingPanel drawingPanel = parentFrame.getDrawingPanel();
             PointsPanel pointsPanel = drawingPanel.getPointsPanel();
@@ -196,10 +150,10 @@ class ButtonsPanel extends JPanel {
                 if (node.getNodeType() == Node.ELEMENT_NODE) {
                     String attributeLat = element.getAttribute("lat");
                     String attributeLon = element.getAttribute("lon");
-                    double coordinateX = Double.parseDouble(attributeLon);
-                    double coordinateY = Double.parseDouble(attributeLat);
+                    double pointLon = Double.parseDouble(attributeLon);
+                    double pointLat = Double.parseDouble(attributeLat);
 
-                    points.add(coordinateX, coordinateY);
+                    points.add(pointLon, pointLat);
                 }
             }
             pointsPanel.locatePointsForFirstTime(drawingPanel);
@@ -208,6 +162,11 @@ class ButtonsPanel extends JPanel {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public void resizeAndRelocatePanel (Dimension frameSize) {
+        setSize((int) frameSize.getWidth(), 40);
+        locatePanel(frameSize);
     }
 
     private BufferedImage convertFileToBufferedImage (File file) {

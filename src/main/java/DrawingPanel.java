@@ -6,6 +6,7 @@ import java.awt.image.BufferedImage;
 import java.util.logging.Logger;
 
 import static java.awt.Color.WHITE;
+import static java.util.logging.Level.WARNING;
 
 class DrawingPanel extends JPanel {
     private static final Logger logger = Logger.getLogger(DrawingPanel.class.getName());
@@ -15,6 +16,7 @@ class DrawingPanel extends JPanel {
     private PointsPanel pointsPanel;
 
     DrawingPanel (int width, int height) {
+        logger.setLevel(WARNING);
         logger.info("method called");
         Dimension preferredPanelSize = calculatePreferredSize(width, height);
         setPanelLocationAndSize(preferredPanelSize);
