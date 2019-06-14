@@ -36,22 +36,21 @@ class PointsPanel extends JPanel {
         int preferredWidth = panel.getWidth() / 2;
         Dimension newSize = new Dimension(preferredWidth, (int) (ratio * preferredWidth));
         this.setSize(newSize);
-        POINTS.locatePointsAtPanel(newSize);
+        //POINTS.locatePointsAtPanel(newSize);
+        POINTS.locatePointsAtPanel2(newSize);
     }
 
     public double getSizeRatio () {
         logger.info("method called");
-        logger.info("MaxPoint: " + POINTS.getMaximum().getX() + " " + POINTS.getMaximum().getY());
-        logger.info("MinPoint: " + POINTS.getMinimum().getX() + " " + POINTS.getMinimum().getY());
-        double spreadX = POINTS.getMaximum().getX() - POINTS.getMinimum().getX();
-        double spreadY = POINTS.getMaximum().getY() - POINTS.getMinimum().getY();
+        logger.info("MaxPoint: " + POINTS.getMaximum().getEarthX() + " " + POINTS.getMaximum().getEarthY());
+        logger.info("MinPoint: " + POINTS.getMinimum().getEarthX() + " " + POINTS.getMinimum().getEarthY());
+        double spreadX = POINTS.getMaximum().getEarthX() - POINTS.getMinimum().getEarthX();
+        double spreadY = POINTS.getMaximum().getEarthY() - POINTS.getMinimum().getEarthY();
         logger.info("Calculated spread: " + spreadX + " " + spreadY);
 
-        double newSpreadX = spreadX * 10000;
-        double newSpreadY = spreadY * 10000;
         if (spreadX != 0d) {
             logger.info("Calculated ratio: " + spreadY / spreadX);
-            return newSpreadY / newSpreadX;
+            return spreadY / spreadX;
         }
         return 0d;
     }
@@ -72,6 +71,7 @@ class PointsPanel extends JPanel {
             g2.setColor(RED);
             g2.setStroke(new BasicStroke(3));
             for (int i = 0; i < POINTS.size() - 1; i++) {
+                g2.setColor(POINTS.get(i).pointColor);
                 g2.drawLine((int) POINTS.get(i).getPanelX(), (int) (POINTS.get(i).getPanelY()),
                             (int) POINTS.get(i + 1).getPanelX(), (int) (POINTS.get(i + 1).getPanelY()));
             }
